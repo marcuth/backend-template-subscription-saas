@@ -39,7 +39,7 @@
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/throttler": "^6.5.0",
     "@prisma/adapter-better-sqlite3": "^7.4.1",
-    "@supabase/supabase-js": "^2.97.0",
+    "@supabase/supabase-js": "^2.98.0",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
