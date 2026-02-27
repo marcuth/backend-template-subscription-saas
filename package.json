@@ -26,7 +26,7 @@
     "db:seed": "prisma db seed"
   },
   "dependencies": {
-    "@getbrevo/brevo": "^3.0.4",
+    "@getbrevo/brevo": "^4.0.1",
     "@golevelup/nestjs-stripe": "^1.2.0",
     "@marcuth/env": "^0.0.1",
     "@nestjs/common": "^11.1.14",
