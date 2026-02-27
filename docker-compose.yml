@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-app
+    restart: always
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env
+    environment:
+      # CONFIGURAÇÃO SQLITE (PADRÃO)
+      - DATABASE_URL=file:./prisma/dev.db
+      - NODE_ENV=production
+      # CONFIGURAÇÃO POSTGRES (DESCOMENTE PARA USAR)
+      # - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-backend_db}?schema=public
+
+    volumes:
+      # Mantém o banco SQLite persistente
+      - ./prisma:/app/prisma
+    # Se usar Postgres, descomente abaixo
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+
+    # SERVIÇO DE BANCO POSTGRES (COMENTADO POR PADRÃO)
+    # db:
+    #   image: postgres:16-alpine
+    #   container_name: backend-db
+    #   restart: always
+    #   environment:
+    #     - POSTGRES_USER=${DB_USER:-postgres}
+    #     - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+    #     - POSTGRES_DB=${DB_NAME:-backend_db}
+    #   healthcheck:
+    #     test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-backend_db}"]
+    #     interval: 10s
+    #     timeout: 5s
+    #     retries: 5
+    #   ports:
+    #     - "5432:5432"
+    #   volumes:
+    #     - postgres_data:/var/lib/postgresql/data
+
+    # volumes:
+    #   postgres_data:

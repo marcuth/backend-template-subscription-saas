@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider     = "prisma-client"
+    moduleFormat = "cjs"
+    output       = "../src/generated/prisma"
+}
+
+datasource db {
+    // Para SQLite (Padrão)
+    provider = "sqlite"
+
+    // Para PostgreSQL (Comente o SQLite acima e descomente abaixo)
+    // provider = "postgresql"
+}
+
+enum UserRole {
+    ADMIN
+    USER
+}
+
+model User {
+    id               String        @id @default(uuid())
+    createdAt        DateTime      @default(now()) @map("created_at")
+    updatedAt        DateTime      @updatedAt @map("updated_at")
+    supabaseId       String?       @unique @map("supabase_uid")
+    stripeCustomerId String?       @unique @map("stripe_customer_id")
+    apiKey           String        @unique @map("api_key")
+    name             String
+    role             UserRole      @default(USER)
+    email            String        @unique
+    username         String        @unique
+    password         String?
+    subscription     Subscription?
+    featureUsage     Json          @map("feature_usage")
+    planId           String        @map("plan_id")
+    plan             Plan          @relation(fields: [planId], references: [id])
+
+    @@map("users")
+}
+
+model Plan {
+    id                String   @id @default(uuid())
+    createdAt         DateTime @default(now()) @map("created_at")
+    updatedAt         DateTime @updatedAt @map("updated_at")
+    name              String   @unique
+    slug              String   @unique
+    description       String
+    price             Decimal
+    currencyCode      String   @default("BRL") @map("currency_code")
+    externalProductId String   @unique @map("external_product_id")
+    externalPriceId   String   @unique @map("external_price_id")
+    features          Json
+    users             User[]
+
+    @@map("plans")
+}
+
+enum SubscriptionStatus {
+    active
+    trialing
+    incomplete
+    incomplete_expired
+    past_due
+    unpaid
+    paused
+    canceled
+}
+
+model Subscription {
+    id                 String             @id @default(uuid())
+    createdAt          DateTime           @default(now()) @map("created_at")
+    updatedAt          DateTime           @updatedAt @map("updated_at")
+    userId             String             @unique @map("user_id")
+    user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    externalId         String             @unique @map("external_id")
+    itemId             String             @unique @map("item_id")
+    status             SubscriptionStatus
+    currentPeriodStart DateTime           @map("current_period_start")
+    currentPeriodEnd   DateTime           @map("current_period_end")
+    cancelAtPeriodEnd  Boolean            @default(false) @map("cancel_at_period_end")
+    canceledAt         DateTime?          @map("canceled_at")
+    endedAt            DateTime?          @map("ended_at")
+
+    @@map("subscriptions")
+}
